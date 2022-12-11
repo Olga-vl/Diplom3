@@ -1,0 +1,106 @@
+package tests;
+
+import api.pojo.User;
+import api.pojo.Credentials;
+import api.UserServices;
+import io.qameta.allure.junit4.DisplayName;
+import io.qameta.allure.junit4.Tag;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import pages.MainPage;
+
+import static com.codeborne.selenide.Selenide.*;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
+import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+import static org.junit.Assert.assertTrue;
+
+public class LoginTestCase {
+    private Credentials credentials;
+    private UserServices userClient;
+    private String accessToken;
+
+    MainPage main;
+
+    @Before
+    public void setUp() {
+        userClient = new UserServices();
+        User user = User.randomUser();
+        credentials = Credentials.getCredentials(user);
+
+        accessToken = userClient.accessToken(userClient.register(user)
+                .assertThat()
+                .statusCode(SC_OK));
+        main = open(MainPage.URL, MainPage.class);
+    }
+
+    @Tag("LoginTestCase")
+    @Test
+    @DisplayName("Проверка входа по кнопке «Войти в аккаунт» на главной")
+    public void checkLoginAccountOnMainPage() {
+        main.clickLoginButton()
+                .setEmail(credentials.getEmail())
+                .setPassword(credentials.getPassword())
+                .loginButtonClick();
+
+        boolean button = main.checkoutButtonVisible();
+
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
+        assertTrue("Button invisible", button);
+    }
+
+    @Tag("LoginTestCase")
+    @Test
+    @DisplayName("Проверка входа через кнопку «Личный кабинет»")
+    public void checkLoginButtonPersonalAccount() {
+        main.clickCabinetButton()
+                .setEmail(credentials.getEmail())
+                .setPassword(credentials.getPassword())
+                .loginButtonClick();
+
+        boolean button = main.checkoutButtonVisible();
+
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
+        assertTrue("Button invisible", button);
+    }
+
+    @Tag("LoginTestCase")
+    @Test
+    @DisplayName("Проверка входа через кнопку в форме регистрации")
+    public void checkLoginInRegistrationForm() {
+        main.clickLoginButton()
+                .regLinkClick()
+                .goToLoginPageFromRegistrationPage()
+                .setEmail(credentials.getEmail())
+                .setPassword(credentials.getPassword())
+                .loginButtonClick();
+
+        boolean button = main.checkoutButtonVisible();
+
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
+        assertTrue("Button invisible", button);
+    }
+
+    @Tag("LoginTestCase")
+    @Test
+    @DisplayName("Проверка входа через кнопку в форме восстановления пароля")
+    public void checkLoginPasswordRecoveryForm() {
+        main.clickLoginButton()
+                .resetPasswordLinkClick()
+                .loginLinkClick()
+                .setEmail(credentials.getEmail())
+                .setPassword(credentials.getPassword())
+                .loginButtonClick();
+
+        boolean button = main.checkoutButtonVisible();
+
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
+        assertTrue("Button invisible", button);
+    }
+
+    @After
+    public void tearDown() {
+        userClient.deleteUser(accessToken);
+        closeWebDriver();
+    }
+}
