@@ -11,7 +11,7 @@ import org.junit.Test;
 import pages.MainPage;
 
 import static com.codeborne.selenide.Selenide.*;
-import static com.codeborne.selenide.WebDriverConditions.url;
+import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
 import static org.junit.Assert.assertTrue;
 
@@ -45,9 +45,8 @@ public class LoginTestCase {
 
         boolean button = main.checkoutButtonVisible();
 
-        webdriver().shouldHave(url("http://stellarburgers.nomoreparties.site/"));
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
         assertTrue("Button invisible", button);
-
     }
 
     @Tag("LoginTestCase")
@@ -61,7 +60,7 @@ public class LoginTestCase {
 
         boolean button = main.checkoutButtonVisible();
 
-        webdriver().shouldHave(url("http://stellarburgers.nomoreparties.site/"));
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
         assertTrue("Button invisible", button);
     }
 
@@ -78,7 +77,7 @@ public class LoginTestCase {
 
         boolean button = main.checkoutButtonVisible();
 
-        webdriver().shouldHave(url("http://stellarburgers.nomoreparties.site/"));
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
         assertTrue("Button invisible", button);
     }
 
@@ -95,7 +94,7 @@ public class LoginTestCase {
 
         boolean button = main.checkoutButtonVisible();
 
-        webdriver().shouldHave(url("http://stellarburgers.nomoreparties.site/"));
+        assertTrue(getWebDriver().getCurrentUrl().contains("stellarburgers.nomoreparties.site"));
         assertTrue("Button invisible", button);
     }
 
